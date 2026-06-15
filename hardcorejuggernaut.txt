@@ -42,32 +42,21 @@ local function StartStrategy()
     print("Starting strategy...")
 
     TDS:ResetIndex()
-    TDS:Place("Pyromancer", -2.0989227294921875, 1.009635329246521, -34.57014465332031)
+    TDS:Place("Pyromancer", -5.936307430267334, 0.9551397562026978, -31.831748962402344)
     TDS:SetTarget(1, "Farthest")
     TDS:Ready()
 
-    TDS:VoteSkip(1, 25)
-    TDS:Upgrade(1)
-    TDS:Upgrade(1)
+    for Index = 1, 4 do
+        TDS:Upgrade(1)
+    end
 
-    TDS:VoteSkip(6)
-    TDS:Upgrade(1)
+    local HunterX = 2.679039716720581
+    local HunterY = 1.341203212738037 + 7
+    local HunterZ = 21.30302619934082
 
-    TDS:Upgrade(1)
-
-    TDS:Place("Hunter", 1.5090651512145996, 0.5713815689086914, 14.419164657592773)
-    TDS:Place("Hunter", 3.570600986480713, 0.9113662242889404, 18.20372200012207)
-    TDS:VoteSkip(14)
-    TDS:Place("Hunter", 0.24097543954849243, 1.317692518234253, 18.51652717590332)
-
-    TDS:VoteSkip(15)
-    TDS:Place("Hunter", 1.720466136932373, 1.384239912033081, 22.47343635559082)
-    TDS:Place("Hunter", 5.2701520919799805, 1.3515396118164062, 22.529003143310547)
-    TDS:Place("Hunter", 8.8175687789917, 1.3109925985336304, 22.54141616821289)
-    TDS:Place("Hunter", 9.301279067993164, 0.847939133644104, 18.969970703125)
-    TDS:Place("Hunter", 6.011168479919434, 1.3946723937988281, 28.527118682861328)
-    TDS:Place("Hunter", 2.5719375610351562, 1.4263112545013428, 27.979778289794922)
-    TDS:Place("Hunter", -1.284123420715332, 1.4632039070129395, 28.251195907592773)
+    for Index = 1, 10 do
+        TDS:Place("Hunter", HunterX, HunterY, HunterZ)
+    end
 
     TDS:WaitForWave(23)
 
@@ -75,7 +64,7 @@ local function StartStrategy()
         TDS:Sell(Index)
     end
 
-    TDS:Place("EvolvedJuggernaut", -1.284123420715332, 1.4632039070129395, 28.251195907592773)
+    TDS:Place("EvolvedJuggernaut", -1.284123420715332, 1.4632039070129395 + 7, 28.251195907592773)
 
     StratRunning = false
     print("Strategy finished.")
@@ -182,4 +171,3 @@ task.spawn(function()
         end
     end
 end)
- 
