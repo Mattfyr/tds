@@ -41,7 +41,7 @@ local function StartStrategy()
 
     print("Starting strategy...")
 
-    TDS:RemoveIndex()
+    TDS:ResetIndex()
     TDS:Place("Pyromancer", -2.0989227294921875, 1.009635329246521, -34.57014465332031)
     TDS:SetTarget(1, "Farthest")
     TDS:Ready()
