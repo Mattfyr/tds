@@ -1,6 +1,3 @@
---!strict
---!optimize 2
-
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TeleportService = game:GetService("TeleportService")
@@ -9,12 +6,31 @@ local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 local RemoteFunction = ReplicatedStorage:WaitForChild("RemoteFunction")
 
+local LOBBY_PLACE_ID = 3260590327
+local MAX_LOSSES = 30
+
 local ActiveStratThread = nil
 local StratRunning = false
 local Teleported = false
 local LossCount = 0
-local MaxLosses = 30
-local LobbyPlaceId = 3260590327
+
+local function TeleportLobby()
+    if Teleported then
+        return
+    end
+
+    Teleported = true
+    print("30 losses reached. Rejoining lobby...")
+
+    local Success, Error = pcall(function()
+        TeleportService:Teleport(LOBBY_PLACE_ID, LocalPlayer)
+    end)
+
+    if not Success then
+        warn("Teleport failed:", Error)
+        Teleported = false
+    end
+end
 
 local function StartStrategy()
     if StratRunning or Teleported then
@@ -23,17 +39,15 @@ local function StartStrategy()
 
     StratRunning = true
 
-    TDS:ResetIndex()
-    TDS:Ready()
+    print("Starting strategy...")
 
+    TDS:RemoveIndex()
     TDS:Place("Pyromancer", -2.0989227294921875, 1.009635329246521, -34.57014465332031)
     TDS:SetTarget(1, "Farthest")
-
-    for _ = 1, 2 do
-        TDS:Upgrade(1)
-    end
+    TDS:Ready()
 
     TDS:VoteSkip(1, 25)
+    TDS:Upgrade(1)
     TDS:Upgrade(1)
 
     TDS:VoteSkip(6)
@@ -41,26 +55,19 @@ local function StartStrategy()
 
     TDS:Upgrade(1)
 
-    local HunterPlacements = {
-        { 1.5090651512145996, 0.5713815689086914, 14.419164657592773 },
-        { 3.570600986480713, 0.9113662242889404, 18.20372200012207 },
-        { 0.24097543954849243, 1.317692518234253, 18.51652717590332 },
-        { 1.720466136932373, 1.384239912033081, 22.47343635559082 },
-        { 5.2701520919799805, 1.3515396118164062, 22.529003143310547 },
-        { 8.8175687789917, 1.3109925985336304, 22.54141616821289 },
-        { 9.301279067993164, 0.847939133644104, 18.969970703125 },
-        { 6.011168479919434, 1.3946723937988281, 28.527118682861328 },
-        { 2.5719375610351562, 1.4263112545013428, 27.979778289794922 },
-        { -1.284123420715332, 1.4632039070129395, 28.251195907592773 },
-    }
-
-    for Index = 1, #HunterPlacements do
-        local Placement = HunterPlacements[Index]
-        TDS:Place("Hunter", Placement[1], Placement[2], Placement[3])
-    end
-
+    TDS:Place("Hunter", 1.5090651512145996, 0.5713815689086914, 14.419164657592773)
+    TDS:Place("Hunter", 3.570600986480713, 0.9113662242889404, 18.20372200012207)
     TDS:VoteSkip(14)
+    TDS:Place("Hunter", 0.24097543954849243, 1.317692518234253, 18.51652717590332)
+
     TDS:VoteSkip(15)
+    TDS:Place("Hunter", 1.720466136932373, 1.384239912033081, 22.47343635559082)
+    TDS:Place("Hunter", 5.2701520919799805, 1.3515396118164062, 22.529003143310547)
+    TDS:Place("Hunter", 8.8175687789917, 1.3109925985336304, 22.54141616821289)
+    TDS:Place("Hunter", 9.301279067993164, 0.847939133644104, 18.969970703125)
+    TDS:Place("Hunter", 6.011168479919434, 1.3946723937988281, 28.527118682861328)
+    TDS:Place("Hunter", 2.5719375610351562, 1.4263112545013428, 27.979778289794922)
+    TDS:Place("Hunter", -1.284123420715332, 1.4632039070129395, 28.251195907592773)
 
     TDS:WaitForWave(23)
 
@@ -71,6 +78,7 @@ local function StartStrategy()
     TDS:Place("EvolvedJuggernaut", -1.284123420715332, 1.4632039070129395, 28.251195907592773)
 
     StratRunning = false
+    print("Strategy finished.")
 end
 
 local function GetMatchStatus()
@@ -96,25 +104,16 @@ local function GetMatchStatus()
         end
 
         local TopBanner = RewardsScreen:FindFirstChild("RewardBanner")
-        if not TopBanner then
+        local TextLabel = TopBanner and TopBanner:FindFirstChild("textLabel")
+
+        if not TextLabel then
             return nil
         end
 
-        local Label = TopBanner:FindFirstChild("textLabel") or TopBanner:FindFirstChildOfClass("TextLabel")
-        if not Label then
-            return nil
-        end
+        local Text = TextLabel.Text:upper()
+        print("Banner text:", Text)
 
-        local Text = Label.Text:upper()
-        if Text == "" then
-            return nil
-        end
-
-        if Text:find("TRIUMPH", 1, true) or Text:find("VICTORY", 1, true) or Text:find("WIN", 1, true) then
-            return "WIN"
-        end
-
-        if Text:find("LOST", 1, true) or Text:find("DEFEAT", 1, true) or Text:find("FAIL", 1, true) then
+        if Text:find("LOST") then
             return "LOSS"
         end
 
@@ -129,13 +128,23 @@ local function GetMatchStatus()
 end
 
 local function FireVotingSkipUntilGone()
+    print("Firing Voting Skip until reward screen disappears...")
+
     while GetMatchStatus() ~= nil and not Teleported do
-        pcall(function()
+        local Success, Error = pcall(function()
             RemoteFunction:InvokeServer("Voting", "Skip")
         end)
 
+        if Success then
+            print("Voting Skip fired")
+        else
+            warn("Voting Skip failed:", Error)
+        end
+
         task.wait(0.5)
     end
+
+    print("Reward screen disappeared.")
 end
 
 task.spawn(function()
@@ -145,8 +154,12 @@ task.spawn(function()
         task.wait(0.5)
 
         local CurrentStatus = GetMatchStatus()
+
         if CurrentStatus == "LOSS" then
             LossCount += 1
+            print("Loss Count:", LossCount .. "/" .. MAX_LOSSES)
+
+            print("Loss detected! Stopping old thread...")
 
             if ActiveStratThread and coroutine.status(ActiveStratThread) ~= "dead" then
                 task.cancel(ActiveStratThread)
@@ -155,17 +168,16 @@ task.spawn(function()
 
             StratRunning = false
 
-            if LossCount >= MaxLosses then
-                Teleported = true
-                pcall(function()
-                    TeleportService:Teleport(LobbyPlaceId, LocalPlayer)
-                end)
+            if LossCount >= MAX_LOSSES then
+                TeleportLobby()
                 break
             end
 
             FireVotingSkipUntilGone()
+
             task.wait(1.5)
 
+            print("Starting new strategy match!")
             ActiveStratThread = task.spawn(StartStrategy)
         end
     end
