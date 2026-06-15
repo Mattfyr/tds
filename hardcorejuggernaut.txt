@@ -1,3 +1,6 @@
+--!strict
+--!optimize 2
+
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TeleportService = game:GetService("TeleportService")
@@ -6,148 +9,171 @@ local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 local RemoteFunction = ReplicatedStorage:WaitForChild("RemoteFunction")
 
-local LOBBY_PLACE_ID = 3260590327
-local MAX_LOSSES = 30
+local ActiveStratThread = nil
+local StratRunning = false
+local Teleported = false
+local LossCount = 0
+local MaxLosses = 30
+local LobbyPlaceId = 3260590327
 
-local activeStratThread = nil
-local stratRunning = false
-local teleported = false
-local lossCount = 0
+loadstring(game:HttpGet("https://raw.githubusercontent.com/AmonguszzZ/AetherModded/refs/heads/main/AetherHub.lua"))()
+TDS:Loadout("Pyromancer", "Hunter", "EvolvedJuggernaut", "None", "None")
 
-local function TeleportLobby()
-    if teleported then
-        return
-    end
-
-    teleported = true
-    print("30 losses reached. Rejoining lobby...")
-
-    local success, err = pcall(function()
-        TeleportService:Teleport(LOBBY_PLACE_ID, LocalPlayer)
-    end)
-
-    if not success then
-        warn("Teleport failed:", err)
-        teleported = false
-    end
+if game.PlaceId == 3260590327 then
+    RemoteFunction:InvokeServer("Multiplayer", "v2:start", {
+        difficulty = "Easy",
+        mode = "hardcore",
+        count = 1,
+    })
 end
 
+TDS:GameInfo("Wretched Front", {})
+
+task.spawn(function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/AmonguszzZ/AetherModded/refs/heads/main/GuiTracker.lua"))()
+end)
+
 local function StartStrategy()
-    if stratRunning or teleported then
+    if StratRunning or Teleported then
         return
     end
 
-    stratRunning = true
+    StratRunning = true
 
-    print("Starting strategy...")
-
-    TDS:ResetIndex()
+    task.wait(2.5)
+    TDS:RemoveIndex()
+    TDS:Place("Pyromancer", -2.0989227294921875, 1.009635329246521, -34.57014465332031)
+    TDS:SetTarget(1, "Farthest")
     TDS:Ready()
 
-    TDS:Place("Pyromancer", -5.936307430267334, 0.9551397562026978, -31.831748962402344)
-    TDS:SetTarget(1, "Farthest")
+    TDS:VoteSkip(1, 25)
+    TDS:Upgrade(1)
+    TDS:Upgrade(1)
 
-    for i = 1, 4 do
-        TDS:Upgrade(1)
+    TDS:VoteSkip(6)
+    TDS:Upgrade(1)
+
+    TDS:Upgrade(1)
+
+    TDS:Place("Hunter", 1.5090651512145996, 0.5713815689086914, 14.419164657592773)
+    TDS:Place("Hunter", 3.570600986480713, 0.9113662242889404, 18.20372200012207)
+    TDS:VoteSkip(14)
+    TDS:Place("Hunter", 0.24097543954849243, 1.317692518234253, 18.51652717590332)
+
+    TDS:VoteSkip(15)
+    TDS:Place("Hunter", 1.720466136932373, 1.384239912033081, 22.47343635559082)
+    TDS:Place("Hunter", 5.2701520919799805, 1.3515396118164062, 22.529003143310547)
+    TDS:Place("Hunter", 8.8175687789917, 1.3109925985336304, 22.54141616821289)
+    TDS:Place("Hunter", 9.301279067993164, 0.847939133644104, 18.969970703125)
+    TDS:Place("Hunter", 6.011168479919434, 1.3946723937988281, 28.527118682861328)
+    TDS:Place("Hunter", 2.5719375610351562, 1.4263112545013428, 27.979778289794922)
+    TDS:Place("Hunter", -1.284123420715332, 1.4632039070129395, 28.251195907592773)
+
+    TDS:WaitForWave(23)
+
+    for Index = 1, 11 do
+        TDS:Sell(Index)
     end
 
-    for i = 1, 10 do
-        TDS:Place("Hunter", 2.679039716720581, 1.341203212738037, 21.30302619934082, true)
-    end
-        TDS:Place("EvolvedJuggernaut", 2.679039716720581, 1.341203212738037, 21.30302619934082, true)
+    TDS:Place("EvolvedJuggernaut", -1.284123420715332, 1.4632039070129395, 28.251195907592773)
 
-    stratRunning = false
-    print("Strategy finished.")
+    StratRunning = false
 end
 
 local function GetMatchStatus()
-    local success, status = pcall(function()
-        local uiRoot = PlayerGui:FindFirstChild("ReactGameNewRewards")
-        if not uiRoot then return nil end
+    local Success, Status = pcall(function()
+        local UiRoot = PlayerGui:FindFirstChild("ReactGameNewRewards")
+        if not UiRoot then
+            return nil
+        end
 
-        local mainFrame = uiRoot:FindFirstChild("Frame")
-        if not mainFrame or not mainFrame.Visible then return nil end
+        local MainFrame = UiRoot:FindFirstChild("Frame")
+        if not MainFrame or not MainFrame.Visible then
+            return nil
+        end
 
-        local gameOver = mainFrame:FindFirstChild("gameOver")
-        if not gameOver or not gameOver.Visible then return nil end
+        local GameOver = MainFrame:FindFirstChild("gameOver")
+        if not GameOver or not GameOver.Visible then
+            return nil
+        end
 
-        local rewardsScreen = gameOver:FindFirstChild("RewardsScreen")
-        if not rewardsScreen or not rewardsScreen.Visible then return nil end
+        local RewardsScreen = GameOver:FindFirstChild("RewardsScreen")
+        if not RewardsScreen or not RewardsScreen.Visible then
+            return nil
+        end
 
-        local topBanner = rewardsScreen:FindFirstChild("RewardBanner")
-        local textLabel = topBanner and topBanner:FindFirstChild("textLabel")
+        local TopBanner = RewardsScreen:FindFirstChild("RewardBanner")
+        if not TopBanner then
+            return nil
+        end
 
-        if not textLabel then return nil end
+        local Label = TopBanner:FindFirstChild("textLabel") or TopBanner:FindFirstChildOfClass("TextLabel")
+        if not Label then
+            return nil
+        end
 
-        local txt = textLabel.Text:upper()
-        print("Banner text:", txt)
+        local Text = Label.Text:upper()
+        if Text == "" then
+            return nil
+        end
 
-        if txt:find("LOST") then
+        if Text:find("TRIUMPH", 1, true) or Text:find("VICTORY", 1, true) or Text:find("WIN", 1, true) then
+            return "WIN"
+        end
+
+        if Text:find("LOST", 1, true) or Text:find("DEFEAT", 1, true) or Text:find("FAIL", 1, true) then
             return "LOSS"
         end
 
         return nil
     end)
 
-    if success then
-        return status
+    if Success then
+        return Status
     end
 
     return nil
 end
 
 local function FireVotingSkipUntilGone()
-    print("Firing Voting Skip until reward screen disappears...")
-
-    while GetMatchStatus() ~= nil and not teleported do
-        local success, err = pcall(function()
+    while GetMatchStatus() ~= nil and not Teleported do
+        pcall(function()
             RemoteFunction:InvokeServer("Voting", "Skip")
         end)
 
-        if success then
-            print("Voting Skip fired")
-        else
-            warn("Voting Skip failed:", err)
-        end
-
         task.wait(0.5)
     end
-
-    print("Reward screen disappeared.")
 end
 
 task.spawn(function()
-    activeStratThread = task.spawn(StartStrategy)
+    ActiveStratThread = task.spawn(StartStrategy)
 
-    while not teleported do
+    while not Teleported do
         task.wait(0.5)
 
-        local currentStatus = GetMatchStatus()
+        local CurrentStatus = GetMatchStatus()
+        if CurrentStatus == "LOSS" then
+            LossCount += 1
 
-        if currentStatus == "LOSS" then
-            lossCount += 1
-            print("Loss Count:", lossCount .. "/" .. MAX_LOSSES)
-
-            print("Loss detected! Stopping old thread...")
-
-            if activeStratThread and coroutine.status(activeStratThread) ~= "dead" then
-                task.cancel(activeStratThread)
-                activeStratThread = nil
+            if ActiveStratThread and coroutine.status(ActiveStratThread) ~= "dead" then
+                task.cancel(ActiveStratThread)
+                ActiveStratThread = nil
             end
 
-            stratRunning = false
+            StratRunning = false
 
-            if lossCount >= MAX_LOSSES then
-                TeleportLobby()
+            if LossCount >= MaxLosses then
+                Teleported = true
+                pcall(function()
+                    TeleportService:Teleport(LobbyPlaceId, LocalPlayer)
+                end)
                 break
             end
 
             FireVotingSkipUntilGone()
-
             task.wait(1.5)
 
-            print("Starting new strategy match!")
-            activeStratThread = task.spawn(StartStrategy)
+            ActiveStratThread = task.spawn(StartStrategy)
         end
     end
 end)
