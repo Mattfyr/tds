@@ -1,12 +1,12 @@
 TDS:Loadout("Soldier", "Shotgunner", "None", "None", "None")
 TDS:Mode("Easy")
-TDS:GameInfo("Gilded Path", {})
+TDS:GameInfo("Gilded Path", {Glass = true, Quarantine = true})
 
 local SoldierX = -1.8605815172195435
-local SoldierY = 1.0112459659576416
+local SoldierY = 1.0112459659576416 + 3
 local SoldierZ = 17.917198181152344
 local ShotgunnerX = 7.437313079833984
-local ShotgunnerY = 0.9595538377761841
+local ShotgunnerY = 0.9595538377761841 + 3
 local ShotgunnerZ = 28.055633544921875
 
 TDS:Place("Soldier", SoldierX, SoldierY, SoldierZ, true)
