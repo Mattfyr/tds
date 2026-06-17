@@ -1,6 +1,6 @@
 TDS:Loadout("Soldier", "Shotgunner", "None", "None", "None")
 TDS:Mode("Easy")
-TDS:GameInfo("Gilded Path", {Glass = true, Quarantine = true})
+TDS:GameInfo("Gilded Path", {})
 
 local SoldierX = -1.8605815172195435
 local SoldierY = 1.0112459659576416
