@@ -5,9 +5,12 @@ TDS:GameInfo("Gilded Path", {Glass = true, Quarantine = true})
 local SoldierX = -1.8605815172195435
 local SoldierY = 1.0112459659576416 + 3
 local SoldierZ = 17.917198181152344
-local ShotgunnerX = 7.437313079833984
-local ShotgunnerY = 0.9595538377761841 + 3
-local ShotgunnerZ = 28.055633544921875
+local ShotgunnerLeftX = -11.628746032714844
+local ShotgunnerLeftY = 1.002064824104309 + 3
+local ShotgunnerLeftZ = 24.371782302856445
+local ShotgunnerRightX = 7.437313079833984
+local ShotgunnerRightY = 0.9595538377761841 + 3
+local ShotgunnerRightZ = 28.055633544921875
 
 TDS:Place("Soldier", SoldierX, SoldierY, SoldierZ, true)
 TDS:Upgrade(1)
@@ -30,34 +33,34 @@ TDS:Upgrade(3)
 
 -- [ Wave 6 ] --
 TDS:VoteSkip(6)
-TDS:Place("Shotgunner", ShotgunnerX, ShotgunnerY, ShotgunnerZ, true)
+TDS:Place("Shotgunner", ShotgunnerLeftX, ShotgunnerLeftY, ShotgunnerLeftZ, true)
 TDS:Upgrade(4)
 
 -- [ Wave 7 ] --
 TDS:VoteSkip(7)
-TDS:Place("Shotgunner", ShotgunnerX, ShotgunnerY, ShotgunnerZ, true)
+TDS:Place("Shotgunner", ShotgunnerRightX, ShotgunnerRightY, ShotgunnerRightZ, true)
 
 -- [ Wave 8 ] --
 TDS:Upgrade(5)
 
 -- [ Wave 9 ] --
-TDS:Place("Shotgunner", ShotgunnerX, ShotgunnerY, ShotgunnerZ, true)
+TDS:Place("Shotgunner", ShotgunnerLeftX, ShotgunnerLeftY, ShotgunnerLeftZ, true)
 TDS:Upgrade(6)
-TDS:Place("Shotgunner", ShotgunnerX, ShotgunnerY, ShotgunnerZ, true)
+TDS:Place("Shotgunner", ShotgunnerRightX, ShotgunnerRightY, ShotgunnerRightZ, true)
 TDS:Upgrade(7)
 
 -- [ Wave 10 ] --
-TDS:Place("Shotgunner", ShotgunnerX, ShotgunnerY, ShotgunnerZ, true)
+TDS:Place("Shotgunner", ShotgunnerLeftX, ShotgunnerLeftY, ShotgunnerLeftZ, true)
 TDS:Upgrade(8)
 
 -- [ Wave 11 ] --
-TDS:Place("Shotgunner", ShotgunnerX, ShotgunnerY, ShotgunnerZ, true)
+TDS:Place("Shotgunner", ShotgunnerRightX, ShotgunnerRightY, ShotgunnerRightZ, true)
 TDS:Upgrade(9)
-TDS:Place("Shotgunner", ShotgunnerX, ShotgunnerY, ShotgunnerZ, true)
+TDS:Place("Shotgunner", ShotgunnerLeftX, ShotgunnerLeftY, ShotgunnerLeftZ, true)
 TDS:Upgrade(10)
 
 -- [ Wave 12 ] --
-TDS:Place("Shotgunner", ShotgunnerX, ShotgunnerY, ShotgunnerZ, true)
+TDS:Place("Shotgunner", ShotgunnerRightX, ShotgunnerRightY, ShotgunnerRightZ, true)
 TDS:Upgrade(11)
 TDS:VoteSkip(12)
 TDS:Upgrade(8)
@@ -102,7 +105,7 @@ TDS:Upgrade(8)
 TDS:Upgrade(6)
 
 -- [ Wave 19 ] --
-TDS:Place("Shotgunner", ShotgunnerX, ShotgunnerY, ShotgunnerZ, true)
+TDS:Place("Shotgunner", ShotgunnerLeftX, ShotgunnerLeftY, ShotgunnerLeftZ, true)
 TDS:Upgrade(15)
 TDS:Upgrade(15)
 TDS:Upgrade(15)
