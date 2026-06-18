@@ -2,9 +2,6 @@ TDS:Mode("Frost")
 TDS:GameInfo("Abyssal Trench", {})
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Modifiers = { Glass = true, Committed = true, HiddenEnemies = true, Quarantine = true, Limitation = true }
-ReplicatedStorage.Network.Modifiers["RF:BulkVoteModifiers"]:InvokeServer(Modifiers)
-
 TDS:Place("Trapper", -3.7282562255859375, 0.4474773406982422, -3.986520290374756)
 TDS:Ready()
 
